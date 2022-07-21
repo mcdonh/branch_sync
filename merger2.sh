@@ -1,10 +1,11 @@
 #!/bin/bash
 
-export webhook=$1
+export webhook=$1                                         # get webhook from input argv
 DATE=$(date)
 find_conflict="git diff --name-only --diff-filter=U"
 get_conflict_hash="git rev-parse HEAD"
 pip3 install pymsteams
+# create python script to post to the webhook
 cat << EOF > teams_webhook.py
 #!/usr/bin/python3
 import pymsteams
@@ -15,6 +16,7 @@ mess_t = pymsteams.connectorcard(webhook)
 mess_t.text(message)
 mess_t.send()
 EOF
+# give permissions to run the webhook script
 chmod 755 teams_webhook.py
 git fetch --unshallow
 git checkout main
@@ -24,6 +26,7 @@ git checkout develop
 git pull
 git push
 git merge main -m "merge on $DATE"
+# check if a conflict has occurred
 CONFLICTS=$(git ls-files -u | wc -l)
 if [ "$CONFLICTS" -gt 0 ]
 then

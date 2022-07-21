@@ -1,22 +1,23 @@
 
 name: develop sync
 
+                                                                # When a pull request to main is closed the action triggers
 on:
   pull_request:
     branches: [ "main" ]
     types: [closed]
 jobs:
-  if: github.event.pull_request.merged == true
-  timeout-minutes: 2
   sync:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest                                      # Image to use for the action
     steps:
       - uses: actions/checkout@v3
-      - name: Set Git Config
+      - name: Set Git Config                                    # Setup git config with the 'user' making the changes
           run: |
             git config --local user.email "actions@github.com"
             git config --local user.name "Github Actions"
       - name: Branch sync script
-        run: sh ./.github/merger.sh #add webhook as argument
+        if: github.event.pull_request.merged == true            # The script does not run unless the pull request that triggered the action is merged
+        timeout-minutes: 2
+        run: sh ./.github/merger.sh                             #add webhook as argument
 
 
