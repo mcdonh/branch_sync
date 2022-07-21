@@ -5,39 +5,18 @@ on:
   pull_request:
     branches: [ "main" ]
     types: [closed]
-  # push:
-  #  branches: [ "main" ]
 jobs:
   if: github.event.pull_request.merged == true
   timeout-minutes: 2
   sync:
     runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+      - name: Set Git Config
+          run: |
+            git config --local user.email "actions@github.com"
+            git config --local user.name "Github Actions"
       - name: Branch sync script
         run: sh ./.github/merger.sh #add webhook as argument
-        # maybe need to use chmod to change the permissions on script file
-        shell: bash
-      - run: |
-          git fetch --unshallow
-          git checkout develop
-          git pull
-          git merge --no-ff main -m "Auto-sync main to develop"
-          git push
-# git clone "https://$GITHUB_ACTOR:${{ secrets.GITHUB_TOKEN }}@github.com/my_username/repoName.git"
-# git fetch
-# cd repoName
-# git checkout main
-# git pull
-# git push
-# git checkout develop
-# git pull
-# git push
-# git merge master -m "auto-sync ..."
-# git push
 
-#      - name: Set Git config
-#        run: |
-#          git config --local user.email "actions@github.com"
-#          git config --local user.name "Github Actions"
+
